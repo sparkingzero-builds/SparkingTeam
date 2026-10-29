@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { characters } from '../data/characters.js'
 import { CHARACTER_TIPS } from '../data/counterStrategies.js'
 import { progression } from '../utils/progression.js'
+import { playWin, playLoss, playBadge } from '../utils/sounds.js'
 import { allMatches, loadMain, loadHistory, saveHistory, loadRecords, saveRecords, logToJournal } from '../utils/matchLog.js'
 
 const AS_KEY = 'szPlayingAs'
@@ -115,6 +116,8 @@ export default function QuickLog({ onLogged }) {
     setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip })
     const levelAfter = progression(allMatches()).level
     setSplash({ result, key: ts, level: levelAfter > levelBefore ? levelAfter : null })
+    if (result === 'w') playWin(); else playLoss()
+    if (levelAfter > levelBefore) setTimeout(playBadge, 450)
     setEnemy(null)
     setSearch('')
     setVersion(v => v + 1)

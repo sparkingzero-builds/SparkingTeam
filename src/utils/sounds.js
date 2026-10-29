@@ -43,6 +43,17 @@ export function playBadge() {
   setTimeout(() => play(1047, 'sine', 0.25, 0.15), 360)
 }
 
+export function playWin() {
+  play(392, 'sawtooth', 0.08, 0.06)
+  setTimeout(() => play(587, 'square', 0.1, 0.07), 70)
+  setTimeout(() => play(784, 'sine', 0.3, 0.13), 150)
+}
+
+export function playLoss() {
+  play(330, 'triangle', 0.18, 0.1)
+  setTimeout(() => play(247, 'triangle', 0.3, 0.09), 140)
+}
+
 export function playRandom() {
   for (let i = 0; i < 6; i++) {
     const freq = 400 + Math.random() * 800

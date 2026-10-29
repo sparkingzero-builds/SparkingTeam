@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { characters, charactersById } from '../data/characters.js'
 import { useLocalStorage } from '../hooks/useLocalStorage.js'
-import { logToJournal } from '../utils/matchLog.js'
+import { logToJournal, allMatches } from '../utils/matchLog.js'
 
 function formatDuration(ms) {
   const mins = Math.floor(ms / 60000)
@@ -36,7 +36,13 @@ export default function SessionMode() {
   }, [asSearch])
 
   const searchResults = useMemo(() => {
-    if (!search.trim()) return characters.slice(0, 16)
+    if (!search.trim()) {
+      const counts = new Map()
+      for (const m of allMatches()) counts.set(m.enemyId, (counts.get(m.enemyId) || 0) + 1)
+      const faced = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => charactersById[id]).filter(Boolean)
+      const rest = characters.filter(c => !counts.has(c.id))
+      return [...faced, ...rest].slice(0, 18)
+    }
     return characters.filter(c => c.name.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 12)
   }, [search])
 

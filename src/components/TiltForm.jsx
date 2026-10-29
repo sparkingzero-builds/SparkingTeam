@@ -31,10 +31,33 @@ function formStats(matches) {
   return [...map.values()].sort((a, b) => b.w + b.l - (a.w + a.l)).slice(0, 6)
 }
 
+const GRADE = ['F', 'D', 'C', 'B', 'A']
+const gradeOf = avg => GRADE[Math.min(4, Math.max(0, Math.round(avg) - 1))]
+
+function kiStats(matches) {
+  const graded = matches.filter(m => m.ki)
+  const avg = list => (list.length ? list.reduce((s, m) => s + m.ki, 0) / list.length : null)
+  const winRateAt = g => {
+    const at = graded.filter(m => m.ki === g)
+    return at.length ? Math.round((at.filter(m => m.result === 'w').length / at.length) * 100) : null
+  }
+  return {
+    n: graded.length,
+    overall: avg(graded),
+    recent: avg(graded.slice(0, 10)),
+    older: avg(graded.slice(10, 30)),
+    onWin: avg(graded.filter(m => m.result === 'w')),
+    onLoss: avg(graded.filter(m => m.result === 'l')),
+    byGrade: GRADE.map((g, i) => ({ g, rate: winRateAt(i + 1), n: graded.filter(m => m.ki === i + 1).length })),
+  }
+}
+
 export default function TiltForm() {
   const matches = allMatches()
   const t = tiltStats(matches)
   const forms = formStats(matches)
+  const k = kiStats(matches)
+  const trend = k.recent != null && k.older != null ? k.recent - k.older : null
   const gap = t.afterWin != null && t.afterLoss != null ? t.afterWin - t.afterLoss : null
   let read = 'Log a few back-to-back games to see how losses affect you.'
   if (t.samples >= 6 && gap != null) {
@@ -72,6 +95,35 @@ export default function TiltForm() {
                 </div>
               )
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="tf__card tf__card--wide">
+        <span className="mw__eyebrow">KI MANAGEMENT</span>
+        {!k.n ? (
+          <p className="tf__read">After a match, grade your Ki in Quick Log (F to A). Did you spam blasts and get caught empty, or always have bars for a Vanish? I'll show how it links to your wins.</p>
+        ) : (
+          <div className="tf__ki">
+            <div className="tf__kigrade">
+              <b>{gradeOf(k.overall)}</b>
+              <small>AVG GRADE</small>
+              {trend != null && Math.abs(trend) >= 0.3 && <em className={trend > 0 ? 'up' : 'down'}>{trend > 0 ? '▲ improving' : '▼ slipping'}</em>}
+            </div>
+            <div className="tf__kibars">
+              {k.byGrade.map(b => (
+                <div key={b.g} className="tf__kibar">
+                  <div><i style={{ height: (b.rate ?? 0) + '%' }} /></div>
+                  <b>{b.g}</b>
+                  <small>{b.rate != null ? b.rate + '%' : '—'}</small>
+                </div>
+              ))}
+            </div>
+            <p className="tf__read">
+              {k.onWin != null && k.onLoss != null
+                ? <>Wins average <b>{gradeOf(k.onWin)}</b> Ki, losses <b>{gradeOf(k.onLoss)}</b>. {k.onWin - k.onLoss >= 0.8 ? 'Ki is deciding your games. Save bars for Vanish and Super Perception.' : 'Ki isn\'t the main reason you lose. Look at your matchups instead.'}</>
+                : `Win rate by Ki grade, from ${k.n} graded games.`}
+            </p>
           </div>
         )}
       </div>

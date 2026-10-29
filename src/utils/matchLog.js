@@ -22,14 +22,14 @@ export function saveHistory(h) { localStorage.setItem(HISTORY_KEY, JSON.stringif
 
 // ts must be the same value stored on the session match, so allMatches() can
 // dedupe the two copies of a Session Mode result.
-export function logToJournal(enemyId, result, myId, ts = Date.now(), formEnd = null) {
+export function logToJournal(enemyId, result, myId, ts = Date.now(), extra = {}) {
   const records = loadRecords()
   if (!records[enemyId]) records[enemyId] = { w: 0, l: 0 }
   records[enemyId][result]++
   saveRecords(records)
 
   const history = loadHistory()
-  history.unshift({ enemyId, result, myId: myId || null, ts, ...(formEnd && { formEnd }) })
+  history.unshift({ enemyId, result, myId: myId || null, ts, ...extra })
   saveHistory(history.slice(0, 500))
 }
 

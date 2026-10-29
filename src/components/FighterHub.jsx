@@ -11,6 +11,7 @@ import WeeklyRecap from './WeeklyRecap.jsx'
 import MatchupHeatmap from './MatchupHeatmap.jsx'
 import TiltForm from './TiltForm.jsx'
 import MetaWatch from './MetaWatch.jsx'
+import SessionGoal from './SessionGoal.jsx'
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -212,6 +213,7 @@ export default function FighterHub({ onNavigate }) {
           </div>
 
           <LevelUpGoal onLog={() => window.dispatchEvent(new Event('ql:open'))} />
+          <SessionGoal />
           <Nemesis onOpen={pickChar} />
           <DailyQuests />
           <WeeklyRecap />

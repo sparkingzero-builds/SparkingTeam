@@ -2307,3 +2307,38 @@ button { font-family: inherit; }
 .ql-form { font-family: var(--font-display); letter-spacing: .05em; font-size: 15px; padding: 4px 12px; background: rgba(255,255,255,.05); color: #ccd; border: 1px solid rgba(255,255,255,.15); cursor: pointer; transform: skewX(-10deg); }
 .ql-form--on { background: var(--orange); color: #111; border-color: var(--orange); }
 .ql-tilt { margin: 4px 0 0; color: #ff8fa3; font-weight: 700; font-size: 13px; }
+
+/* ===== Session goal / Ki / announcer ===== */
+.sg { margin-top: 18px; padding: 18px 20px; background: linear-gradient(160deg, rgba(47,200,255,.1), rgba(8,10,24,.92) 60%); border: 1px solid rgba(47,200,255,.3); clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+.sg--done { border-color: #3ddc84; background: linear-gradient(160deg, rgba(61,220,132,.18), rgba(8,10,24,.92) 60%); }
+.sg__voice { font-family: var(--font-display); letter-spacing: .1em; font-size: 14px; padding: 5px 12px; background: rgba(255,255,255,.05); color: #889; border: 1px solid rgba(255,255,255,.15); cursor: pointer; }
+.sg__voice.on { color: #6ec8ff; border-color: #6ec8ff; }
+.sg__bar { height: 14px; background: rgba(255,255,255,.07); clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.sg__bar i { display: block; height: 100%; background: linear-gradient(90deg, #2fc8ff, #8b5cff); transition: width .5s; }
+.sg--done .sg__bar i { background: linear-gradient(90deg, #3ddc84, #b6ff6b); }
+.sg__text { color: #ccd; margin: 8px 0; font-size: 15px; }
+.sg--done .sg__text { color: #3ddc84; font-weight: 700; }
+.sg__foot { display: flex; justify-content: space-between; align-items: center; color: #aab; font-size: 14px; }
+.sg__end { font-family: var(--font-display); letter-spacing: .12em; background: none; color: #aab; border: 1px solid rgba(255,255,255,.2); padding: 4px 12px; cursor: pointer; }
+.sg__set { display: grid; gap: 10px; justify-items: start; }
+.sg__num { display: flex; align-items: center; gap: 10px; }
+.sg__num button { width: 34px; height: 34px; font-size: 20px; background: rgba(255,255,255,.07); color: #fff; border: 1px solid rgba(255,255,255,.2); cursor: pointer; }
+.sg__num b { font-family: var(--font-display); font-size: 36px; color: #fff; min-width: 40px; text-align: center; }
+.sg__num span { color: #aab; }
+.ql-goal { margin: 4px 0 0; color: #3ddc84; font-weight: 700; font-size: 13px; }
+.ql-goalchip { color: #6ec8ff; letter-spacing: 0; }
+.ql-ki { min-width: 38px; }
+
+.tf__card--wide { grid-column: 1 / -1; }
+.tf__ki { display: grid; grid-template-columns: auto auto 1fr; gap: 20px; align-items: center; margin-top: 8px; }
+.tf__kigrade { text-align: center; }
+.tf__kigrade b { display: block; font-family: 'Bangers', var(--font-display); font-size: 64px; line-height: 1; color: #6ec8ff; text-shadow: 0 0 20px rgba(47,200,255,.5); }
+.tf__kigrade small { font-size: 11px; letter-spacing: .15em; color: #99a; }
+.tf__kigrade em { display: block; font-style: normal; font-size: 12px; margin-top: 4px; } .tf__kigrade em.up { color: #3ddc84; } .tf__kigrade em.down { color: var(--red); }
+.tf__kibars { display: flex; gap: 8px; align-items: flex-end; }
+.tf__kibar { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.tf__kibar > div { width: 26px; height: 70px; background: rgba(255,255,255,.07); display: flex; align-items: flex-end; }
+.tf__kibar i { display: block; width: 100%; background: linear-gradient(0deg, #2fc8ff, #8b5cff); }
+.tf__kibar b { font-family: var(--font-display); color: #fff; font-size: 16px; line-height: 1; }
+.tf__kibar small { font-size: 11px; color: #889; }
+@media (max-width: 760px) { .tf__ki { grid-template-columns: auto 1fr; } .tf__ki .tf__read { grid-column: 1 / -1; } }

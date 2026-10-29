@@ -34,6 +34,7 @@ import CharacterSpotlight from './components/CharacterSpotlight.jsx'
 import PresetTeams from './components/PresetTeams.jsx'
 import QuickLog from './components/QuickLog.jsx'
 import { allMatches, loadMain, masteryFor } from './utils/matchLog.js'
+import { progression } from './utils/progression.js'
 
 function PlayerCard({ onOpen }) {
   const mainId = loadMain()
@@ -45,10 +46,12 @@ function PlayerCard({ onOpen }) {
   const { tier } = masteryFor(mainWins)
   let streak = 0
   for (const m of matches) { if (m.result === 'w') streak++; else break }
+  const prog = progression(matches)
   return (
     <button className="hud-player" type="button" onClick={onOpen}>
       <div className="hud-player__portrait" style={{ '--tier': tier.color }}>
         {main?.forms[0]?.image ? <img src={main.forms[0].image} alt="" /> : <span>?</span>}
+        <b className="hud-player__lvl">{prog.level}</b>
       </div>
       <div className="hud-player__info">
         <span className="hud-player__name">{main ? main.name : 'Set your main'}</span>
@@ -57,6 +60,7 @@ function PlayerCard({ onOpen }) {
           <b className="hud-w">{w}W</b> <b className="hud-l">{l}L</b>
           {streak >= 2 && <b className="hud-streak">🔥{streak}</b>}
         </span>
+        <span className="hud-player__xp"><i style={{ width: `${prog.pct}%` }} /></span>
       </div>
     </button>
   )

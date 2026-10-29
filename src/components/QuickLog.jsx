@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { characters } from '../data/characters.js'
 import { CHARACTER_TIPS } from '../data/counterStrategies.js'
+import { progression } from '../utils/progression.js'
 import { allMatches, loadMain, loadHistory, saveHistory, loadRecords, saveRecords, logToJournal } from '../utils/matchLog.js'
 
 const AS_KEY = 'szPlayingAs'
@@ -36,7 +37,7 @@ export default function QuickLog({ onLogged }) {
 
   useEffect(() => {
     if (!splash) return
-    const t = setTimeout(() => setSplash(null), 1100)
+    const t = setTimeout(() => setSplash(null), splash.level ? 1800 : 1100)
     return () => clearTimeout(t)
   }, [splash])
 
@@ -102,6 +103,7 @@ export default function QuickLog({ onLogged }) {
 
   const log = (result) => {
     const ts = Date.now()
+    const levelBefore = progression(allMatches()).level
     logToJournal(enemy.id, result, asId, ts)
     const active = readActive()
     if (active) {
@@ -111,7 +113,8 @@ export default function QuickLog({ onLogged }) {
     const tips = CHARACTER_TIPS[enemy.id]?.tips
     const tip = result === 'l' && tips?.length ? tips[Math.floor(Math.random() * tips.length)] : null
     setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip })
-    setSplash({ result, key: ts })
+    const levelAfter = progression(allMatches()).level
+    setSplash({ result, key: ts, level: levelAfter > levelBefore ? levelAfter : null })
     setEnemy(null)
     setSearch('')
     setVersion(v => v + 1)
@@ -148,8 +151,9 @@ export default function QuickLog({ onLogged }) {
       </button>
 
       {splash && (
-        <div key={splash.key} className={'ql-splash ql-splash--' + splash.result} aria-hidden="true">
+        <div key={splash.key} className={'ql-splash ql-splash--' + splash.result + (splash.level ? ' ql-splash--lvl' : '')} aria-hidden="true">
           <span>{splash.result === 'w' ? 'VICTORY!' : 'DEFEAT'}</span>
+          {splash.level && <em className="ql-splash__lvl">LEVEL UP! · LVL {splash.level}</em>}
         </div>
       )}
 

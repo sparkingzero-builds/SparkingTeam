@@ -4,6 +4,7 @@ import { getCombatData } from '../data/combatData.js'
 import { tierLists } from '../data/tierList.js'
 import CharacterDetail from './CharacterDetail.jsx'
 import FighterCard from './FighterCard.jsx'
+import LevelUpGoal from './LevelUpGoal.jsx'
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -203,6 +204,8 @@ export default function FighterHub({ onNavigate }) {
               )}
             </div>
           </div>
+
+          <LevelUpGoal onLog={() => window.dispatchEvent(new Event('ql:open'))} />
 
           <div className="hub-popular">
             <h3 className="hub-popular__title">Top Tier Fighters</h3>

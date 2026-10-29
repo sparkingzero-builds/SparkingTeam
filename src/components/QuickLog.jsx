@@ -37,6 +37,12 @@ export default function QuickLog({ onLogged }) {
   }, [open])
 
   useEffect(() => {
+    const openSheet = () => setOpen(true)
+    window.addEventListener('ql:open', openSheet)
+    return () => window.removeEventListener('ql:open', openSheet)
+  }, [])
+
+  useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(null), toast.tip ? 9000 : 4000)
     return () => clearTimeout(t)

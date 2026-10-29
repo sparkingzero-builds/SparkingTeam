@@ -310,7 +310,7 @@ export default function App() {
           </nav>
         </div>
 
-        <div className="page-enter" key={view + ':' + (view === 'journal' || view === 'session' ? logTick : 0)}>
+        <div className="page-enter" key={view + ':' + (view === 'journal' || view === 'session' || view === 'hub' ? logTick : 0)}>
         {view === 'hub' ? (
           <FighterHub onNavigate={setView} />
         ) : view === 'builder' ? (

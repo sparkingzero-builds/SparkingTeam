@@ -87,6 +87,8 @@ const NAV_ITEMS = [
   { key: 'news', label: 'News' },
 ]
 
+const BUILDER_VIEWS = new Set(['builder', 'teams', 'compare', 'counter'])
+
 const ALL_KEYS = NAV_ITEMS.flatMap(item => [item.key, ...(item.sub || []).map(s => s.key)])
 
 function getViewLabel(key) {
@@ -389,7 +391,7 @@ export default function App() {
         </p>
       </footer>
 
-      <ActionBar
+      {BUILDER_VIEWS.has(view) && <ActionBar
         teamName={teamName}
         onTeamName={setTeamName}
         teamNotes={teamNotes}
@@ -401,7 +403,7 @@ export default function App() {
         filtersOpen={showFilters}
         canSave={team.length > 0}
         shareLabel={shareLabel}
-      />
+      />}
 
       {picking && (
         <FormPicker

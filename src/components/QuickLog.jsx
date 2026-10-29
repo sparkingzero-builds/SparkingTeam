@@ -73,6 +73,7 @@ export default function QuickLog({ onLogged }) {
   const pickAs = (id) => {
     setAsId(id)
     localStorage.setItem(AS_KEY, JSON.stringify(id))
+    if (!loadMain()) localStorage.setItem('szMainFighter', JSON.stringify(id))
     setPickingAs(false)
     setSearch('')
   }

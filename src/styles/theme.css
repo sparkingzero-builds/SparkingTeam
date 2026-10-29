@@ -1219,3 +1219,6 @@ button { font-family: inherit; }
   .detail-close { right: 16px; }
   .detail-dp { margin-right: 52px; }
 }
+
+.app:not(:has(.actionbar)) .ql-fab { bottom: 24px; }
+.app:not(:has(.actionbar)) .ql-toast:not(.ql-toast--inline) { bottom: 92px; }

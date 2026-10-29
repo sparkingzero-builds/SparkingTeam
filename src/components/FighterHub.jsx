@@ -12,6 +12,11 @@ import MatchupHeatmap from './MatchupHeatmap.jsx'
 import TiltForm from './TiltForm.jsx'
 import MetaWatch from './MetaWatch.jsx'
 import SessionGoal from './SessionGoal.jsx'
+import CoachNote from './CoachNote.jsx'
+import VsLastMonth from './VsLastMonth.jsx'
+import Collection from './Collection.jsx'
+
+const HUB_TABS = [['overview', 'Overview'], ['stats', 'Stats'], ['collection', 'Collection'], ['meta', 'Meta Watch']]
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -172,6 +177,16 @@ export default function FighterHub({ onNavigate }) {
     setSearch('')
   }
 
+  const openId = (id) => charactersById[id] && pickChar(charactersById[id])
+
+  const [tab, setTab] = useState(() => {
+    try { return localStorage.getItem('szHubTab') || 'overview' } catch { return 'overview' }
+  })
+  const chooseTab = (k) => {
+    setTab(k)
+    try { localStorage.setItem('szHubTab', k) } catch {}
+  }
+
   const popular = useMemo(() => {
     const zTier = tierLists[0]?.tiers?.find(t => t.tier === 'Z')
     if (!zTier) return []
@@ -212,16 +227,33 @@ export default function FighterHub({ onNavigate }) {
             </div>
           </div>
 
-          <LevelUpGoal onLog={() => window.dispatchEvent(new Event('ql:open'))} />
-          <SessionGoal />
-          <Nemesis onOpen={pickChar} />
-          <DailyQuests />
-          <WeeklyRecap />
-          <MatchupHeatmap onOpen={pickChar} />
-          <TiltForm />
-          <MetaWatch onOpen={pickChar} />
+          <div className="hub-tabs" role="tablist">
+            {HUB_TABS.map(([k, label]) => (
+              <button key={k} type="button" role="tab" aria-selected={tab === k} className={'hub-tab' + (tab === k ? ' on' : '')} onClick={() => chooseTab(k)}>{label}</button>
+            ))}
+          </div>
 
-          <div className="hub-popular">
+          {tab === 'overview' && <div className="hub-pane" key="overview">
+            <CoachNote />
+            <LevelUpGoal onLog={() => window.dispatchEvent(new Event('ql:open'))} />
+            <SessionGoal />
+            <Nemesis onOpen={pickChar} />
+            <DailyQuests />
+          </div>}
+          {tab === 'stats' && <div className="hub-pane" key="stats">
+            <WeeklyRecap />
+            <VsLastMonth />
+            <MatchupHeatmap onOpen={openId} />
+            <TiltForm />
+          </div>}
+          {tab === 'collection' && <div className="hub-pane" key="collection">
+            <Collection onOpen={openId} />
+          </div>}
+          {tab === 'meta' && <div className="hub-pane" key="meta">
+            <MetaWatch onOpen={openId} />
+          </div>}
+
+          {tab === 'overview' && <div className="hub-popular">
             <h3 className="hub-popular__title">Top Tier Fighters</h3>
             <div className="hub-showcase">
               {popular.map((c, i) => {
@@ -244,7 +276,7 @@ export default function FighterHub({ onNavigate }) {
                 )
               })}
             </div>
-          </div>
+          </div>}
 
           <div className="hub-quick-links">
             <button className="hub-quick-link" type="button" onClick={() => onNavigate('rankings')}>

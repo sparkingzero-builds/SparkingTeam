@@ -38,6 +38,7 @@ export default function QuickLog({ onLogged }) {
   const [splash, setSplash] = useState(null)
   const [formEnd, setFormEnd] = useState(null)
   const [ki, setKi] = useState(null)
+  const [hover, setHover] = useState(null)
   const logRef = useRef(null)
 
   useEffect(() => {
@@ -95,7 +96,10 @@ export default function QuickLog({ onLogged }) {
 
   const q = search.trim().toLowerCase()
   const results = q ? characters.filter(c => c.name.toLowerCase().includes(q)).slice(0, 24) : null
-  const grid = results || (frequent.length ? frequent : characters.slice(0, 24))
+  const frequentIds = new Set(frequent.map(c => c.id))
+  const grid = results || [...frequent, ...characters.filter(c => !frequentIds.has(c.id))]
+  const shown = pickingAs ? (results || characters) : grid
+  const preview = hover || (pickingAs ? asChar : null) || shown[0]
   const asChar = asId ? byId.get(asId) : null
 
   const pickAs = (id) => {
@@ -272,20 +276,34 @@ export default function QuickLog({ onLogged }) {
                   autoFocus
                 />
                 <p className="ql-hint">
-                  {pickingAs ? 'Choose your fighter' : results ? `${results.length} found` : frequent.length ? 'Most faced' : 'Tap who you fought'}
+                  {pickingAs ? 'SELECT YOUR FIGHTER' : results ? `${results.length} found` : frequent.length ? `MOST FACED FIRST · ${characters.length} FIGHTERS` : 'SELECT OPPONENT'}
                 </p>
-                <div className="ql-grid">
-                  {(pickingAs ? (results || characters.slice(0, 24)) : grid).map(c => (
-                    <button
-                      key={c.id}
-                      className={'ql-tile' + (pickingAs && c.id === asId ? ' ql-tile--on' : '')}
-                      type="button"
-                      onClick={() => pickingAs ? pickAs(c.id) : setEnemy(c)}
-                    >
-                      <Portrait char={c} className="ql-tile__img" />
-                      <span className="ql-tile__name">{c.name}</span>
-                    </button>
-                  ))}
+                <div className="ql-select">
+                  {preview && (
+                    <div className="ql-preview" key={preview.id} style={{ '--aura': preview.color || '#ff8a1f' }}>
+                      <Portrait char={preview} className="ql-preview__img" />
+                      <div className="ql-preview__banner">
+                        <small>{pickingAs ? 'PLAYER 1' : 'CHALLENGER'}</small>
+                        <strong>{preview.name}</strong>
+                        <em>{preview.forms.length} form{preview.forms.length > 1 ? 's' : ''} · {preview.forms[0]?.dp} DP</em>
+                      </div>
+                    </div>
+                  )}
+                  <div className="ql-grid">
+                    {shown.map(c => (
+                      <button
+                        key={c.id}
+                        className={'ql-tile' + (pickingAs && c.id === asId ? ' ql-tile--on' : '') + (!pickingAs && !results && frequentIds.has(c.id) ? ' ql-tile--freq' : '')}
+                        type="button"
+                        onPointerEnter={() => setHover(c)}
+                        onFocus={() => setHover(c)}
+                        onClick={() => { setHover(null); pickingAs ? pickAs(c.id) : setEnemy(c) }}
+                      >
+                        <Portrait char={c} className="ql-tile__img" />
+                        <span className="ql-tile__name">{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             )}

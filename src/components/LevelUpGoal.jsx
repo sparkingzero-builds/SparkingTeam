@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { characters } from '../data/characters.js'
 import { allMatches, loadMain } from '../utils/matchLog.js'
+import RankUpCutscene, { isRankUp } from './RankUpCutscene.jsx'
 
 const WINDOW = 20
 const TARGET = 60
@@ -21,6 +22,7 @@ function mostPlayed(matches) {
 export default function LevelUpGoal({ onLog }) {
   const [rank, setRank] = useState(() => read(RANK_KEY) || '')
   const [editing, setEditing] = useState(false)
+  const [cutscene, setCutscene] = useState(null)
 
   const matches = allMatches()
   const charId = read('szPlayingAs') || loadMain() || mostPlayed(matches)
@@ -50,6 +52,7 @@ export default function LevelUpGoal({ onLog }) {
 
   const saveRank = (v) => {
     const clean = v.trim().toUpperCase().slice(0, 6)
+    if (isRankUp(rank, clean)) setCutscene({ from: rank, to: clean })
     setRank(clean)
     localStorage.setItem(RANK_KEY, JSON.stringify(clean))
     setEditing(false)
@@ -62,6 +65,7 @@ export default function LevelUpGoal({ onLog }) {
 
   return (
     <div className={'lvl' + (ready ? ' lvl--ready' : '')}>
+      {cutscene && <RankUpCutscene from={cutscene.from} to={cutscene.to} onDone={() => setCutscene(null)} />}
       <div className="lvl__ring">
         <svg viewBox="0 0 110 110">
           <circle className="lvl__track" cx="55" cy="55" r={R} />

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { charactersById } from '../data/characters.js'
 import { allMatches } from '../utils/matchLog.js'
+import { matchupTrend } from '../utils/insights.js'
 
 function heat(rate) {
   // red (0%) → amber (50%) → green (100%)
@@ -11,7 +12,8 @@ function heat(rate) {
 export default function MatchupHeatmap({ onOpen }) {
   const [sort, setSort] = useState('worst')
   const map = new Map()
-  for (const m of allMatches()) {
+  const all = allMatches()
+  for (const m of all) {
     const e = map.get(m.enemyId) || { w: 0, l: 0 }
     e[m.result]++
     map.set(m.enemyId, e)
@@ -43,6 +45,7 @@ export default function MatchupHeatmap({ onOpen }) {
           <div className="hm__grid">
             {cells.map(c => {
               const ch = charactersById[c.id]
+              const trend = matchupTrend(c.id, all)
               return (
                 <button
                   key={c.id}
@@ -55,11 +58,16 @@ export default function MatchupHeatmap({ onOpen }) {
                   {ch.forms[0]?.image ? <img src={ch.forms[0].image} alt="" loading="lazy" /> : <span className="hm__ph">{ch.name[0]}</span>}
                   <b>{c.rate}%</b>
                   <small>{c.w}-{c.l}</small>
+                  {trend && trend.dir !== 'flat' && (
+                    <i className={'hm__trend hm__trend--' + trend.dir} title={`Last 5 vs previous 5: ${trend.diff > 0 ? '+' : ''}${trend.diff}%`}>
+                      {trend.dir === 'up' ? '▲' : '▼'}
+                    </i>
+                  )}
                 </button>
               )
             })}
           </div>
-          <div className="hm__legend"><span>0%</span><i /><span>100%</span><em>Faded = under 3 games</em></div>
+          <div className="hm__legend"><span>0%</span><i /><span>100%</span><em>▲▼ = trend over last 5 games · Faded = under 3 games</em></div>
         </>
       )}
     </section>

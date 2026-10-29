@@ -1,5 +1,12 @@
 export const news = [
   {
+    id: 'roadmap-2026-2027',
+    title: 'Roadmap revealed: Tower of Power, cross-play beta and a new DLC fighter',
+    date: '2026-10-09',
+    category: 'Coming Soon',
+    link: 'https://www.nintendolife.com/news/2026/10/dragon-ball-sparking-zero-announces-cross-play-in-new-road-map',
+  },
+  {
     id: 'neo-journey-mode',
     title: 'Travel the World with Limit-Breaker Journey Mode!',
     date: '2026-07-30',

@@ -32,6 +32,35 @@ import MetaDashboard from './components/MetaDashboard.jsx'
 import BadgeNotification from './components/BadgeNotification.jsx'
 import CharacterSpotlight from './components/CharacterSpotlight.jsx'
 import PresetTeams from './components/PresetTeams.jsx'
+import QuickLog from './components/QuickLog.jsx'
+import { allMatches, loadMain, masteryFor } from './utils/matchLog.js'
+
+function PlayerCard({ onOpen }) {
+  const mainId = loadMain()
+  const main = mainId ? characters.find(c => c.id === mainId) : null
+  const matches = allMatches()
+  const w = matches.filter(m => m.result === 'w').length
+  const l = matches.length - w
+  const mainWins = main ? matches.filter(m => m.myId === main.id && m.result === 'w').length : 0
+  const { tier } = masteryFor(mainWins)
+  let streak = 0
+  for (const m of matches) { if (m.result === 'w') streak++; else break }
+  return (
+    <button className="hud-player" type="button" onClick={onOpen}>
+      <div className="hud-player__portrait" style={{ '--tier': tier.color }}>
+        {main?.forms[0]?.image ? <img src={main.forms[0].image} alt="" /> : <span>?</span>}
+      </div>
+      <div className="hud-player__info">
+        <span className="hud-player__name">{main ? main.name : 'Set your main'}</span>
+        <span className="hud-player__tier" style={{ color: tier.color }}>{tier.name.toUpperCase()}</span>
+        <span className="hud-player__rec">
+          <b className="hud-w">{w}W</b> <b className="hud-l">{l}L</b>
+          {streak >= 2 && <b className="hud-streak">🔥{streak}</b>}
+        </span>
+      </div>
+    </button>
+  )
+}
 
 const NAV_ITEMS = [
   { key: 'hub', label: 'Fighter Hub', sub: [
@@ -90,6 +119,7 @@ export default function App() {
   const [notifQueue, setNotifQueue] = useState([])
   const [showPresets, setShowPresets] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null)
+  const [logTick, setLogTick] = useState(0)
 
   const unlockedIds = useMemo(
     () => checkAchievements(team, savedTeams, favorites),
@@ -224,11 +254,24 @@ export default function App() {
         <TeamBar team={team} onRemove={removeAt} onReorder={reorderTeam} />
       )}
 
+      <div className="fx-bg" aria-hidden="true">
+        <div className="fx-bg__aura" />
+        <div className="fx-bg__lines" />
+        <div className="fx-bg__sparks" />
+      </div>
+
       <main className="main">
         <div className="brand">
-          <h1>
-            Sparking! <span className="accent">Zero</span>
-            {view !== 'hub' && <> {getViewLabel(view)}</>}
+          <div className="hud-top">
+            <button className="hud-logo" type="button" onClick={() => setView('hub')}>
+              <span className="hud-logo__a">SPARKING!</span>
+              <span className="hud-logo__b">ZERO</span>
+              <span className="hud-logo__c">FIGHTER TOOLKIT</span>
+            </button>
+            <PlayerCard key={logTick} onOpen={() => setView('journal')} />
+          </div>
+          <h1 className="hud-page-title">
+            <span>{view === 'hub' ? 'Fighter Hub' : getViewLabel(view)}</span>
           </h1>
           <nav className="view-tabs">
             {NAV_ITEMS.map(item => {
@@ -267,6 +310,7 @@ export default function App() {
           </nav>
         </div>
 
+        <div className="page-enter" key={view + ':' + (view === 'journal' || view === 'session' ? logTick : 0)}>
         {view === 'hub' ? (
           <FighterHub onNavigate={setView} />
         ) : view === 'builder' ? (
@@ -333,7 +377,10 @@ export default function App() {
         ) : (
           <MetaDashboard savedTeams={savedTeams} unlockedIds={unlockedIds} />
         )}
+        </div>
       </main>
+
+      <QuickLog onLogged={() => setLogTick(t => t + 1)} />
 
       <footer className="footer">
         <p>

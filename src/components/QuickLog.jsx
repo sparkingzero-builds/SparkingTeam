@@ -31,6 +31,13 @@ export default function QuickLog({ onLogged }) {
   const [pickingAs, setPickingAs] = useState(false)
   const [toast, setToast] = useState(null)
   const [version, setVersion] = useState(0)
+  const [splash, setSplash] = useState(null)
+
+  useEffect(() => {
+    if (!splash) return
+    const t = setTimeout(() => setSplash(null), 1100)
+    return () => clearTimeout(t)
+  }, [splash])
 
   useEffect(() => {
     if (open) setAsId(readAs() || loadMain())
@@ -89,6 +96,7 @@ export default function QuickLog({ onLogged }) {
     const tips = CHARACTER_TIPS[enemy.id]?.tips
     const tip = result === 'l' && tips?.length ? tips[Math.floor(Math.random() * tips.length)] : null
     setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip })
+    setSplash({ result, key: ts })
     setEnemy(null)
     setSearch('')
     setVersion(v => v + 1)
@@ -121,6 +129,12 @@ export default function QuickLog({ onLogged }) {
         <span className="ql-fab__bolt">⚡</span>
         <span className="ql-fab__label">LOG</span>
       </button>
+
+      {splash && (
+        <div key={splash.key} className={'ql-splash ql-splash--' + splash.result} aria-hidden="true">
+          <span>{splash.result === 'w' ? 'VICTORY!' : 'DEFEAT'}</span>
+        </div>
+      )}
 
       {toast && !open && (
         <div className={'ql-toast ql-toast--' + toast.result}>

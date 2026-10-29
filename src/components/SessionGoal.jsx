@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import { GOAL_TYPES, loadGoal, saveGoal, goalProgress } from '../utils/sessionGoal.js'
-import { announcerOn, setAnnouncer } from '../utils/announcer.js'
 
 export default function SessionGoal() {
   const [goal, setGoal] = useState(loadGoal)
   const [type, setType] = useState('wins')
   const [target, setTarget] = useState(4)
-  const [voice, setVoice] = useState(announcerOn)
   const p = goalProgress(goal)
 
   const start = () => {
@@ -15,7 +13,6 @@ export default function SessionGoal() {
     setGoal(g)
   }
   const end = () => { saveGoal(null); setGoal(null) }
-  const toggleVoice = () => { setAnnouncer(!voice); setVoice(!voice) }
 
   return (
     <section className={'sg' + (p?.done ? ' sg--done' : '')}>
@@ -24,9 +21,6 @@ export default function SessionGoal() {
           <span className="mw__eyebrow">SESSION GOAL</span>
           <h3 className="mw__title">{p ? `${GOAL_TYPES[goal.type].label} ${goal.target} ${GOAL_TYPES[goal.type].unit}` : 'Set a goal before you play'}</h3>
         </div>
-        <button type="button" className={'sg__voice' + (voice ? ' on' : '')} onClick={toggleVoice} title="Announcer voice on wins/losses">
-          {voice ? '🔊 ANNOUNCER ON' : '🔇 ANNOUNCER OFF'}
-        </button>
       </div>
 
       {p ? (

@@ -3,7 +3,7 @@ import { characters } from '../data/characters.js'
 import { CHARACTER_TIPS } from '../data/counterStrategies.js'
 import { progression } from '../utils/progression.js'
 import { playWin, playLoss, playBadge } from '../utils/sounds.js'
-import { announce } from '../utils/announcer.js'
+import { SET_FORMATS, loadActiveSet, startSet, cancelSet, addSetGame, undoSetGame } from '../utils/sets.js'
 import { goalProgress } from '../utils/sessionGoal.js'
 import { allMatches, loadMain, loadHistory, saveHistory, loadRecords, saveRecords, logToJournal } from '../utils/matchLog.js'
 
@@ -39,11 +39,15 @@ export default function QuickLog({ onLogged }) {
   const [formEnd, setFormEnd] = useState(null)
   const [ki, setKi] = useState(null)
   const [hover, setHover] = useState(null)
+  const [activeSet, setActiveSet] = useState(loadActiveSet)
+  const [setup, setSetup] = useState(false)
+  const [ft, setFt] = useState(3)
+  const [setName, setSetName] = useState('')
   const logRef = useRef(null)
 
   useEffect(() => {
     if (!splash) return
-    const t = setTimeout(() => setSplash(null), splash.level ? 1800 : 1100)
+    const t = setTimeout(() => setSplash(null), splash.level || splash.set ? 1900 : 1100)
     return () => clearTimeout(t)
   }, [splash])
 
@@ -99,8 +103,8 @@ export default function QuickLog({ onLogged }) {
   const frequentIds = new Set(frequent.map(c => c.id))
   const grid = results || [...frequent, ...characters.filter(c => !frequentIds.has(c.id))]
   const shown = pickingAs ? (results || characters) : grid
-  const preview = hover || (pickingAs ? asChar : null) || shown[0]
   const asChar = asId ? byId.get(asId) : null
+  const preview = hover || (pickingAs ? asChar : null) || shown[0]
 
   const pickAs = (id) => {
     setAsId(id)
@@ -116,6 +120,8 @@ export default function QuickLog({ onLogged }) {
     const goalWasDone = goalProgress()?.done
     const extra = { ...(formEnd && { formEnd }), ...(ki && { ki }) }
     logToJournal(enemy.id, result, asId, ts, extra)
+    const sr = addSetGame(result, ts, asId)
+    setActiveSet(loadActiveSet())
     const active = readActive()
     if (active) {
       active.matches.push({ enemyId: enemy.id, result, myId: asId || null, ts, ...extra })
@@ -130,16 +136,17 @@ export default function QuickLog({ onLogged }) {
     const tilt = lossRun >= 3 ? `${lossRun} losses in a row. Tilt check: step away for 5 minutes.` : null
     const gp = goalProgress()
     const goal = gp?.done && !goalWasDone ? gp.text : null
-    setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip, tilt, goal })
+    setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip, tilt, goal, setScore: sr && !sr.done ? `${sr.set.w}-${sr.set.l}` : null })
     setFormEnd(null)
     setKi(null)
     const levelAfter = progression(after).level
     const levelUp = levelAfter > levelBefore ? levelAfter : null
-    setSplash({ result, key: ts, level: levelUp })
+    setSplash(sr?.done
+      ? { result: sr.set.won ? 'w' : 'l', key: ts, level: levelUp, set: sr.set }
+      : { result, key: ts, level: levelUp })
     if (result === 'w') playWin(); else playLoss()
     if (levelUp) setTimeout(playBadge, 450)
-    announce({ result, me: asChar?.name.replace(/ \(.*\)/, '') || 'You', enemy: enemy.name.replace(/ \(.*\)/, ''), winStreak: winRun, lossStreak: lossRun, levelUp, goalHit: goal })
-    setEnemy(null)
+    if (!sr || sr.done) setEnemy(null)
     setSearch('')
     setVersion(v => v + 1)
     onLogged?.()
@@ -150,6 +157,8 @@ export default function QuickLog({ onLogged }) {
   const undo = () => {
     if (!toast) return
     saveHistory(loadHistory().filter(h => h.ts !== toast.ts))
+    undoSetGame(toast.ts, toast.result)
+    setActiveSet(loadActiveSet())
     const active = readActive()
     if (active) {
       active.matches = active.matches.filter(m => m.ts !== toast.ts)
@@ -176,7 +185,8 @@ export default function QuickLog({ onLogged }) {
 
       {splash && (
         <div key={splash.key} className={'ql-splash ql-splash--' + splash.result + (splash.level ? ' ql-splash--lvl' : '')} aria-hidden="true">
-          <span>{splash.result === 'w' ? 'VICTORY!' : 'DEFEAT'}</span>
+          <span>{splash.set ? (splash.set.won ? 'SET WON!' : 'SET LOST') : splash.result === 'w' ? 'VICTORY!' : 'DEFEAT'}</span>
+          {splash.set && <em className="ql-splash__lvl">{splash.set.w}–{splash.set.l} · FT{splash.set.ft}{splash.set.name ? ' vs ' + splash.set.name : ''}</em>}
           {splash.level && <em className="ql-splash__lvl">LEVEL UP! · LVL {splash.level}</em>}
         </div>
       )}
@@ -184,7 +194,7 @@ export default function QuickLog({ onLogged }) {
       {toast && !open && (
         <div className={'ql-toast ql-toast--' + toast.result}>
           <div className="ql-toast__body">
-            <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+            <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged{toast.setScore && <b className="ql-setscore"> · SET {toast.setScore}</b>}</span>
             {toast.goal && <p className="ql-goal">🎯 {toast.goal}</p>}
             {toast.tilt && <p className="ql-tilt">⚠ {toast.tilt}</p>}
             {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}
@@ -208,13 +218,38 @@ export default function QuickLog({ onLogged }) {
                 <small>{readActive() ? <span className="ql-live">● SESSION LIVE</span> : goalProgress() ? <span className="ql-goalchip">🎯 {goalProgress().text}</span> : 'TODAY'}</small>
                 <strong><span className="ql-w">{today.w}W</span> · <span className="ql-l">{today.l}L</span></strong>
               </div>
+              <button className={'ql-setbtn' + (activeSet || setup ? ' on' : '')} type="button" onClick={() => setSetup(v => !v)}>SET</button>
               <button className="ql-close" type="button" onClick={close} aria-label="Close">✕</button>
             </div>
+
+            {activeSet ? (
+              <div className="ql-set ql-set--live">
+                <span className="ql-set__label">FT{activeSet.ft}{activeSet.name ? ' vs ' + activeSet.name : ''}</span>
+                <span className="ql-set__score"><b className="ql-w">{activeSet.w}</b><i>–</i><b className="ql-l">{activeSet.l}</b></span>
+                <span className="ql-set__pips">
+                  {Array.from({ length: activeSet.ft }, (_, i) => <i key={'w' + i} className={i < activeSet.w ? 'on w' : ''} />)}
+                  <em />
+                  {Array.from({ length: activeSet.ft }, (_, i) => <i key={'l' + i} className={i < activeSet.l ? 'on l' : ''} />)}
+                </span>
+                {setup && <button type="button" className="ql-set__cancel" onClick={() => { cancelSet(); setActiveSet(null); setSetup(false) }}>Abandon set</button>}
+              </div>
+            ) : setup && (
+              <div className="ql-set">
+                <span className="ql-set__label">NEW SET · FIRST TO</span>
+                <div className="ql-set__fts">
+                  {SET_FORMATS.map(n => (
+                    <button key={n} type="button" className={'ql-form' + (ft === n ? ' ql-form--on' : '')} onClick={() => setFt(n)}>FT{n}</button>
+                  ))}
+                </div>
+                <input className="ql-set__name" placeholder="Opponent name (optional)" value={setName} onChange={e => setSetName(e.target.value)} maxLength={24} />
+                <button type="button" className="ql-set__go" onClick={() => { setActiveSet(startSet(ft, setName)); setSetName(''); setSetup(false) }}>▶ START SET</button>
+              </div>
+            )}
 
             {toast && (
               <div className={'ql-toast ql-toast--inline ql-toast--' + toast.result}>
                 <div className="ql-toast__body">
-                  <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+                  <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged{toast.setScore && <b className="ql-setscore"> · SET {toast.setScore}</b>}</span>
                   {toast.goal && <p className="ql-goal">🎯 {toast.goal}</p>}
                   {toast.tilt && <p className="ql-tilt">⚠ {toast.tilt}</p>}
                   {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}

@@ -15,6 +15,7 @@ import SessionGoal from './SessionGoal.jsx'
 import CoachNote from './CoachNote.jsx'
 import VsLastMonth from './VsLastMonth.jsx'
 import MomentumGraph from './MomentumGraph.jsx'
+import SetRecord from './SetRecord.jsx'
 import Collection from './Collection.jsx'
 
 const HUB_TABS = [['overview', 'Overview'], ['stats', 'Stats'], ['collection', 'Collection'], ['meta', 'Meta Watch']]
@@ -244,6 +245,7 @@ export default function FighterHub({ onNavigate }) {
           {tab === 'stats' && <div className="hub-pane" key="stats">
             <WeeklyRecap />
             <MomentumGraph />
+            <SetRecord />
             <VsLastMonth />
             <MatchupHeatmap onOpen={openId} />
             <TiltForm />

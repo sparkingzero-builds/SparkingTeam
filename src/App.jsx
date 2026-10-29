@@ -37,9 +37,12 @@ import { allMatches, loadMain, masteryFor } from './utils/matchLog.js'
 import { progression } from './utils/progression.js'
 
 function PlayerCard({ onOpen }) {
-  const mainId = loadMain()
-  const main = mainId ? characters.find(c => c.id === mainId) : null
   const matches = allMatches()
+  const counts = new Map()
+  for (const m of matches) if (m.myId) counts.set(m.myId, (counts.get(m.myId) || 0) + 1)
+  const mostPlayed = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
+  const mainId = loadMain() || mostPlayed
+  const main = mainId ? characters.find(c => c.id === mainId) : null
   const w = matches.filter(m => m.result === 'w').length
   const l = matches.length - w
   const mainWins = main ? matches.filter(m => m.myId === main.id && m.result === 'w').length : 0

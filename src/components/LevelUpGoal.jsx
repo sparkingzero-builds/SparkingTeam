@@ -10,11 +10,20 @@ function read(key) {
   try { return JSON.parse(localStorage.getItem(key)) } catch { return null }
 }
 
+function mostPlayed(matches) {
+  const counts = new Map()
+  for (const m of matches) if (m.myId) counts.set(m.myId, (counts.get(m.myId) || 0) + 1)
+  let best = null
+  for (const [id, n] of counts) if (!best || n > best[1]) best = [id, n]
+  return best?.[0] || null
+}
+
 export default function LevelUpGoal({ onLog }) {
   const [rank, setRank] = useState(() => read(RANK_KEY) || '')
   const [editing, setEditing] = useState(false)
 
-  const charId = read('szPlayingAs') || loadMain()
+  const matches = allMatches()
+  const charId = read('szPlayingAs') || loadMain() || mostPlayed(matches)
   const char = charId ? characters.find(c => c.id === charId) : null
   if (!char) {
     return (
@@ -31,7 +40,7 @@ export default function LevelUpGoal({ onLog }) {
     )
   }
 
-  const recent = allMatches().filter(m => m.myId === char.id).slice(0, WINDOW)
+  const recent = matches.filter(m => m.myId === char.id).slice(0, WINDOW)
   const wins = recent.filter(m => m.result === 'w').length
   const rate = recent.length ? Math.round((wins / recent.length) * 100) : 0
   const ready = recent.length >= WINDOW && rate >= TARGET

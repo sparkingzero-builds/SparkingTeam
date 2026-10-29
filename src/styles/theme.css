@@ -2081,3 +2081,125 @@ button { font-family: inherit; }
   .dq__quest { grid-template-columns: 24px 1fr auto; }
   .dq__reward { display: none; }
 }
+
+/* ---------- Nemesis ---------- */
+.nem {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  border: 1px solid rgba(255, 68, 102, 0.5);
+  background: linear-gradient(100deg, rgba(255, 68, 102, 0.28), rgba(18, 10, 30, 0.92) 45%, rgba(10, 14, 40, 0.95));
+  clip-path: var(--cut);
+  overflow: hidden;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.nem:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(255, 68, 102, 0.35); }
+
+.nem__art { position: relative; min-height: 160px; overflow: hidden; }
+.nem__art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  filter: saturate(1.2) contrast(1.1);
+  animation: fc-drift 12s ease-in-out infinite alternate;
+}
+.nem__art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 50%, rgba(18, 10, 30, 0.95)), repeating-linear-gradient(0deg, rgba(255, 68, 102, 0.08) 0 2px, transparent 2px 4px);
+}
+
+.nem__body { padding: 14px 18px 16px 4px; }
+.nem__eyebrow { font-family: var(--font-display); font-size: 14px; letter-spacing: 0.3em; color: var(--red); animation: ql-blink 1.6s steps(2) infinite; }
+.nem__name { margin: 2px 0 4px; font-size: 34px; font-style: italic; text-shadow: 3px 3px 0 #3a0010, 0 0 18px rgba(255, 68, 102, 0.5); }
+.nem__rec { display: flex; gap: 10px; align-items: baseline; font-family: var(--font-display); font-size: 20px; }
+.nem__rec span { font-size: 15px; color: var(--muted); letter-spacing: 0.08em; }
+.nem__w { color: var(--green); }
+.nem__l { color: var(--red); }
+.nem__danger { margin: 6px 0 4px; font-size: 14px; color: #ffcbd5; font-weight: 600; line-height: 1.3; }
+.nem__tip { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.3; }
+.nem__tip b { color: var(--orange-2); font-family: var(--font-display); font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+@media (max-width: 600px) {
+  .nem { grid-template-columns: 96px 1fr; }
+  .nem__name { font-size: 26px; }
+}
+
+/* ---------- Hub fighter profile ---------- */
+.hub-profile__header {
+  position: relative;
+  padding: 16px;
+  background: linear-gradient(100deg, rgba(255, 138, 31, 0.22), rgba(18, 24, 62, 0.85) 45%, rgba(10, 14, 40, 0.9));
+  border: 1px solid rgba(255, 138, 31, 0.4);
+  clip-path: var(--cut);
+  overflow: hidden;
+}
+
+.hub-profile__header::before {
+  content: '';
+  position: absolute;
+  left: -80px;
+  top: 50%;
+  width: 420px;
+  height: 420px;
+  margin-top: -210px;
+  background: repeating-conic-gradient(from 0deg, transparent 0 6deg, rgba(255, 200, 120, 0.08) 6deg 7deg);
+  animation: fx-spin 30s linear infinite;
+  pointer-events: none;
+}
+
+.hub-profile__portrait { position: relative; }
+.hub-profile__img {
+  width: 150px !important;
+  height: 190px !important;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%) !important;
+  box-shadow: none !important;
+  animation: detail-in 0.4s both;
+}
+
+.hub-profile__name {
+  font-family: var(--font-display) !important;
+  font-size: clamp(34px, 6vw, 56px) !important;
+  font-style: italic;
+  line-height: 0.9 !important;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0 #3a1200, 0 0 24px rgba(255, 138, 31, 0.45);
+}
+
+.hub-form-btn {
+  transform: skewX(-12deg);
+  font-family: var(--font-display) !important;
+  font-size: 16px !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hub-stat { font-family: var(--font-display); font-size: 17px !important; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
+.hub-tier-badge { font-family: var(--font-display); font-size: 17px !important; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
+
+.hub-spread__bar { height: 22px !important; transform: skewX(-20deg); overflow: hidden; }
+.hub-spread__seg { font-family: var(--font-display); font-size: 15px !important; }
+
+.hub-matchup-card { border-left: 3px solid var(--line) !important; transition: transform 0.12s; }
+.hub-matchup-card:hover { transform: translateX(4px); }
+.hub-matchup-card__name { font-family: var(--font-display); font-size: 19px !important; text-transform: uppercase; }
+.hub-matchup-card__verdict { font-family: var(--font-display); font-size: 16px !important; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.hub-back { font-family: var(--font-display) !important; font-size: 16px !important; letter-spacing: 0.1em; text-transform: uppercase; transform: skewX(-12deg); }
+
+@media (max-width: 600px) {
+  .hub-profile__img { width: 100px !important; height: 128px !important; }
+}

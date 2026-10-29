@@ -1682,3 +1682,86 @@ button { font-family: inherit; }
 
 .syn__pill { border-radius: 0 !important; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
 .syn__title { font-family: var(--font-display); letter-spacing: 0.2em; text-transform: uppercase; }
+
+/* ---------- Tier list ---------- */
+.tier-row {
+  border: none !important;
+  border-radius: 0 !important;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent);
+}
+
+.tier-label {
+  width: 92px !important;
+  min-width: 92px !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+  position: relative;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 50%, rgba(0, 0, 0, 0.3)) !important;
+}
+
+.tier-letter {
+  font-family: var(--font-impact) !important;
+  font-size: 54px !important;
+  font-weight: 400 !important;
+  color: #fff !important;
+  -webkit-text-stroke: 2px #000;
+  text-shadow: 3px 3px 0 #000 !important;
+  transform: skewX(-10deg) translateX(-6px);
+}
+
+.tier-chars {
+  border-radius: 0 !important;
+  background: rgba(10, 14, 40, 0.75) !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-bottom: 1px solid var(--line);
+}
+
+.tier-card {
+  position: relative;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  gap: 0 !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: transform 0.15s, filter 0.15s !important;
+}
+
+.tier-card:hover { transform: translateY(-4px) scale(1.05); filter: brightness(1.15) drop-shadow(0 0 10px rgba(255, 138, 31, 0.6)); z-index: 2; }
+
+.tier-card-img, .tier-card-placeholder {
+  width: 88px !important;
+  height: 112px !important;
+  border-radius: 0 !important;
+  object-position: 50% 20%;
+}
+
+.tier-card-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto !important;
+  padding: 18px 4px 4px;
+  font-family: var(--font-display);
+  font-size: 13px !important;
+  line-height: 1 !important;
+  text-transform: uppercase;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.92));
+}
+
+.rankings-cat-btn {
+  border-radius: 0 !important;
+  transform: skewX(-12deg);
+  font-family: var(--font-display) !important;
+  font-size: 17px !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .tier-label { width: 56px !important; min-width: 56px !important; }
+  .tier-letter { font-size: 36px !important; }
+  .tier-card-img, .tier-card-placeholder { width: 66px !important; height: 84px !important; }
+}

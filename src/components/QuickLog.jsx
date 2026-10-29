@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { characters } from '../data/characters.js'
 import { CHARACTER_TIPS } from '../data/counterStrategies.js'
 import { allMatches, loadMain, loadHistory, saveHistory, loadRecords, saveRecords, logToJournal } from '../utils/matchLog.js'
@@ -32,6 +32,7 @@ export default function QuickLog({ onLogged }) {
   const [toast, setToast] = useState(null)
   const [version, setVersion] = useState(0)
   const [splash, setSplash] = useState(null)
+  const logRef = useRef(null)
 
   useEffect(() => {
     if (!splash) return
@@ -42,6 +43,20 @@ export default function QuickLog({ onLogged }) {
   useEffect(() => {
     if (open) setAsId(readAs() || loadMain())
   }, [open])
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)
+      const k = e.key.toLowerCase()
+      if (k === 'escape' && open) { setOpen(false); setEnemy(null); setPickingAs(false); setSearch(''); return }
+      if (typing) return
+      if (!open && k === 'l') { e.preventDefault(); setOpen(true); return }
+      if (open && enemy && (k === 'w' || k === 'l')) { e.preventDefault(); logRef.current(k) }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, enemy])
 
   useEffect(() => {
     const openSheet = () => setOpen(true)
@@ -102,6 +117,8 @@ export default function QuickLog({ onLogged }) {
     setVersion(v => v + 1)
     onLogged?.()
   }
+
+  logRef.current = log
 
   const undo = () => {
     if (!toast) return
@@ -187,6 +204,7 @@ export default function QuickLog({ onLogged }) {
                   <button className="ql-wl__btn ql-wl__btn--l" type="button" onClick={() => log('l')}>LOSS</button>
                 </div>
                 <button className="ql-back" type="button" onClick={() => setEnemy(null)}>← Different opponent</button>
+                <p className="ql-keys">Keyboard: <kbd>W</kbd> win · <kbd>L</kbd> loss · <kbd>Esc</kbd> close</p>
               </div>
             ) : (
               <>

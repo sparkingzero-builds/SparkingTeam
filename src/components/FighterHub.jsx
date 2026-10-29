@@ -7,6 +7,7 @@ import FighterCard from './FighterCard.jsx'
 import LevelUpGoal from './LevelUpGoal.jsx'
 import DailyQuests from './DailyQuests.jsx'
 import Nemesis from './Nemesis.jsx'
+import WeeklyRecap from './WeeklyRecap.jsx'
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -210,6 +211,7 @@ export default function FighterHub({ onNavigate }) {
           <LevelUpGoal onLog={() => window.dispatchEvent(new Event('ql:open'))} />
           <Nemesis onOpen={pickChar} />
           <DailyQuests />
+          <WeeklyRecap />
 
           <div className="hub-popular">
             <h3 className="hub-popular__title">Top Tier Fighters</h3>

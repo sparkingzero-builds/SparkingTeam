@@ -8,6 +8,9 @@ import LevelUpGoal from './LevelUpGoal.jsx'
 import DailyQuests from './DailyQuests.jsx'
 import Nemesis from './Nemesis.jsx'
 import WeeklyRecap from './WeeklyRecap.jsx'
+import MatchupHeatmap from './MatchupHeatmap.jsx'
+import TiltForm from './TiltForm.jsx'
+import MetaWatch from './MetaWatch.jsx'
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -212,6 +215,9 @@ export default function FighterHub({ onNavigate }) {
           <Nemesis onOpen={pickChar} />
           <DailyQuests />
           <WeeklyRecap />
+          <MatchupHeatmap onOpen={pickChar} />
+          <TiltForm />
+          <MetaWatch onOpen={pickChar} />
 
           <div className="hub-popular">
             <h3 className="hub-popular__title">Top Tier Fighters</h3>

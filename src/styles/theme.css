@@ -2243,3 +2243,67 @@ button { font-family: inherit; }
 .wr__share:hover { filter: brightness(1.15); }
 @media (max-width: 600px) { .wr__stats { grid-template-columns: repeat(2, 1fr); } }
 .wr .wr__title { font-size: clamp(36px, 6vw, 56px) !important; line-height: 1 !important; }
+
+/* ===== Meta Watch / Heatmap / Tilt & Form ===== */
+.mw, .hm, .tf__card { margin-top: 18px; padding: 18px 20px; background: linear-gradient(160deg, rgba(20,28,60,.85), rgba(8,10,24,.92)); border: 1px solid rgba(110,160,255,.2); clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+.mw__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.mw__eyebrow { font-family: var(--font-display); letter-spacing: .25em; font-size: 14px; color: #6ec8ff; }
+.mw__title { font-family: var(--font-display); font-size: 28px; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: .04em; }
+.mw__hint { color: #99a; font-size: 14px; margin: 0 0 8px; }
+.mw__list { display: grid; gap: 6px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+.mw__row { display: grid; grid-template-columns: 44px 170px 1fr auto; align-items: center; gap: 12px; padding: 5px 10px 5px 5px; background: rgba(0,0,0,.3); border: 0; border-left: 3px solid var(--c); color: #ccd; text-align: left; cursor: pointer; --c: #3ddc84; }
+.mw__row:hover { background: rgba(255,255,255,.06); }
+.mw__row--nerf { --c: var(--red); } .mw__row--mixed { --c: #ffc94a; }
+.mw__row img { width: 44px; height: 44px; object-fit: cover; object-position: 50% 15%; }
+.mw__name { font-family: var(--font-display); font-size: 18px; color: #fff; line-height: 1; }
+.mw__name i { display: block; font-style: normal; font-size: 10px; letter-spacing: .2em; color: var(--orange-2); margin-top: 3px; }
+.mw__notes { font-size: 13px; color: #aab; }
+.mw__tag { font-family: var(--font-display); letter-spacing: .1em; color: var(--c); white-space: nowrap; }
+.mw__link { display: inline-block; margin-top: 10px; color: #6ec8ff; font-size: 13px; }
+@media (max-width: 640px) { .mw__row { grid-template-columns: 40px 1fr auto; } .mw__notes { grid-column: 2 / -1; } }
+
+.fc__meta { position: absolute; z-index: 4; left: 8px; bottom: 44%; font-family: var(--font-display); font-size: 12px; letter-spacing: .1em; padding: 1px 7px; color: #111; background: #3ddc84; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
+.fc__meta--nerf { background: var(--red); color: #fff; } .fc__meta--mixed { background: #ffc94a; }
+.fc--meta-buff .fc__frame { box-shadow: inset 0 0 0 1px rgba(61,220,132,.5), 0 0 14px rgba(61,220,132,.35); }
+.fc--meta-nerf .fc__frame { box-shadow: inset 0 0 0 1px rgba(255,68,102,.5), 0 0 14px rgba(255,68,102,.35); }
+
+.hm__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; }
+.hm__cell { position: relative; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: pointer; background: #111; outline: 2px solid var(--heat); outline-offset: -2px; }
+.hm__cell img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; opacity: .55; transition: opacity .2s, transform .2s; }
+.hm__cell::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, var(--heat)); opacity: .85; mix-blend-mode: normal; }
+.hm__cell:hover img { opacity: .9; transform: scale(1.06); }
+.hm__cell b, .hm__cell small { position: absolute; z-index: 1; left: 6px; color: #fff; text-shadow: 0 1px 3px #000; }
+.hm__cell b { bottom: 16px; font-family: var(--font-display); font-size: 22px; line-height: 1; }
+.hm__cell small { bottom: 4px; font-size: 11px; }
+.hm__cell--thin { opacity: .45; }
+.hm__ph { display: grid; place-items: center; height: 100%; font-size: 30px; color: #445; }
+.hm__legend { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #99a; }
+.hm__legend i { width: 140px; height: 8px; background: linear-gradient(90deg, hsl(0,80%,45%), hsl(65,80%,45%), hsl(130,80%,45%)); }
+.hm__legend em { margin-left: auto; font-style: normal; }
+
+.tf { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; }
+.tf .tf__card { margin-top: 18px; }
+.tf__card--hot { border-color: rgba(255,68,102,.6); box-shadow: 0 0 24px rgba(255,68,102,.25) inset; }
+.tf__warn { color: var(--red); font-weight: 700; margin: 6px 0; }
+.tf__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.tf__pair div { background: rgba(0,0,0,.3); padding: 8px 12px; border-left: 3px solid #3ddc84; }
+.tf__pair div:last-child { border-color: var(--red); }
+.tf__pair b { display: block; font-family: var(--font-display); font-size: 34px; color: #fff; line-height: 1; }
+.tf__pair b.tf__l { color: #ff8fa3; }
+.tf__pair small { font-size: 11px; letter-spacing: .15em; color: #99a; }
+.tf__read { color: #ccd; font-size: 14px; margin: 6px 0 0; }
+.tf__forms { display: grid; gap: 8px; margin-top: 10px; }
+.tf__form { display: grid; grid-template-columns: 170px 1fr 70px; align-items: center; gap: 10px; }
+.tf__form span { display: flex; flex-direction: column; line-height: 1.1; }
+.tf__form b { font-family: var(--font-display); font-size: 17px; color: #fff; } .tf__form span small { font-size: 11px; color: #889; }
+.tf__bar { height: 10px; background: rgba(255,255,255,.08); }
+.tf__bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--orange), #ffc94a); }
+.tf__form em { font-style: normal; font-family: var(--font-display); font-size: 18px; color: #fff; text-align: right; } .tf__form em small { font-size: 11px; color: #889; }
+@media (max-width: 760px) { .tf { grid-template-columns: 1fr; } .tf__form { grid-template-columns: 120px 1fr 60px; } }
+
+.ql-forms { margin: 4px 0 12px; text-align: center; }
+.ql-forms small { display: block; font-size: 11px; letter-spacing: .2em; color: #99a; margin-bottom: 6px; } .ql-forms em { font-style: normal; color: #667; }
+.ql-forms > div { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.ql-form { font-family: var(--font-display); letter-spacing: .05em; font-size: 15px; padding: 4px 12px; background: rgba(255,255,255,.05); color: #ccd; border: 1px solid rgba(255,255,255,.15); cursor: pointer; transform: skewX(-10deg); }
+.ql-form--on { background: var(--orange); color: #111; border-color: var(--orange); }
+.ql-tilt { margin: 4px 0 0; color: #ff8fa3; font-weight: 700; font-size: 13px; }

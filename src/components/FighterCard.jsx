@@ -1,4 +1,5 @@
 import { tierLists } from '../data/tierList.js'
+import { META_BY_ID } from '../data/metaWatch.js'
 
 const singles = tierLists.find(t => t.name === 'Singles')
 const TIER_OF = new Map()
@@ -33,10 +34,12 @@ function reset(e) {
 export default function FighterCard({ charId, name, form, dp, image, color, health, kiBars, traits = [], rank, size = 'md', onClick, delay = 0 }) {
   const rarity = rarityFor(dp)
   const tier = TIER_OF.get(charId)
+  const meta = META_BY_ID.get(charId)
   return (
     <button
       type="button"
-      className={`fc fc--${rarity} fc--${size}`}
+      className={`fc fc--${rarity} fc--${size}` + (meta ? ` fc--meta-${meta.verdict}` : '')}
+      title={meta ? meta.notes.map(n => n.note).join(' · ') : undefined}
       style={{ '--aura': color || '#ff8a1f', '--delay': `${delay}ms` }}
       onPointerMove={tilt}
       onPointerLeave={reset}
@@ -54,6 +57,7 @@ export default function FighterCard({ charId, name, form, dp, image, color, heal
 
         {tier && <span className="fc__tier" style={{ '--t': tier.color }}>{tier.tier}</span>}
         {rank != null && <span className="fc__rank">#{rank}</span>}
+        {meta && <span className={'fc__meta fc__meta--' + meta.verdict}>{meta.verdict === 'buff' ? '▲' : meta.verdict === 'nerf' ? '▼' : '◆'} {meta.verdict.toUpperCase()}</span>}
         <span className="fc__dp"><b>{dp}</b><small>DP</small></span>
 
         <div className="fc__info">

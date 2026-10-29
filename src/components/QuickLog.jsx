@@ -34,6 +34,7 @@ export default function QuickLog({ onLogged }) {
   const [toast, setToast] = useState(null)
   const [version, setVersion] = useState(0)
   const [splash, setSplash] = useState(null)
+  const [formEnd, setFormEnd] = useState(null)
   const logRef = useRef(null)
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function QuickLog({ onLogged }) {
 
   useEffect(() => {
     if (!toast) return
-    const t = setTimeout(() => setToast(null), toast.tip ? 9000 : 4000)
+    const t = setTimeout(() => setToast(null), toast.tip || toast.tilt ? 9000 : 4000)
     return () => clearTimeout(t)
   }, [toast])
 
@@ -105,15 +106,19 @@ export default function QuickLog({ onLogged }) {
   const log = (result) => {
     const ts = Date.now()
     const levelBefore = progression(allMatches()).level
-    logToJournal(enemy.id, result, asId, ts)
+    logToJournal(enemy.id, result, asId, ts, formEnd)
     const active = readActive()
     if (active) {
-      active.matches.push({ enemyId: enemy.id, result, myId: asId || null, ts })
+      active.matches.push({ enemyId: enemy.id, result, myId: asId || null, ts, ...(formEnd && { formEnd }) })
       localStorage.setItem(ACTIVE_KEY, JSON.stringify(active))
     }
     const tips = CHARACTER_TIPS[enemy.id]?.tips
     const tip = result === 'l' && tips?.length ? tips[Math.floor(Math.random() * tips.length)] : null
-    setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip })
+    let lossRun = 0
+    for (const m of allMatches()) { if (m.result === 'l') lossRun++; else break }
+    const tilt = lossRun >= 3 ? `${lossRun} losses in a row. Tilt check: step away for 5 minutes.` : null
+    setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip, tilt })
+    setFormEnd(null)
     const levelAfter = progression(allMatches()).level
     setSplash({ result, key: ts, level: levelAfter > levelBefore ? levelAfter : null })
     if (result === 'w') playWin(); else playLoss()
@@ -164,6 +169,7 @@ export default function QuickLog({ onLogged }) {
         <div className={'ql-toast ql-toast--' + toast.result}>
           <div className="ql-toast__body">
             <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+            {toast.tilt && <p className="ql-tilt">⚠ {toast.tilt}</p>}
             {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}
           </div>
           <button type="button" onClick={undo}>Undo</button>
@@ -192,6 +198,7 @@ export default function QuickLog({ onLogged }) {
               <div className={'ql-toast ql-toast--inline ql-toast--' + toast.result}>
                 <div className="ql-toast__body">
                   <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+                  {toast.tilt && <p className="ql-tilt">⚠ {toast.tilt}</p>}
                   {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}
                 </div>
                 <button type="button" onClick={undo}>Undo</button>
@@ -206,6 +213,21 @@ export default function QuickLog({ onLogged }) {
                   <Portrait char={enemy} className="ql-vs__img" />
                 </div>
                 <h3 className="ql-vs__name">{enemy.name}</h3>
+                {asChar && asChar.forms.length > 1 && (
+                  <div className="ql-forms">
+                    <small>FINISHED IN <em>(optional)</em></small>
+                    <div>
+                      {asChar.forms.map(f => (
+                        <button
+                          key={f.form}
+                          type="button"
+                          className={'ql-form' + (formEnd === f.form ? ' ql-form--on' : '')}
+                          onClick={() => setFormEnd(formEnd === f.form ? null : f.form)}
+                        >{f.form}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="ql-wl">
                   <button className="ql-wl__btn ql-wl__btn--w" type="button" onClick={() => log('w')}>WIN</button>
                   <button className="ql-wl__btn ql-wl__btn--l" type="button" onClick={() => log('l')}>LOSS</button>

@@ -2442,3 +2442,20 @@ button { font-family: inherit; }
 .ql-select .ql-grid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); grid-auto-rows: 112px; }
 .ql-select .ql-tile { aspect-ratio: auto; height: 112px; }
 @media (max-width: 640px) { .ql-select { grid-template-columns: minmax(0, 1fr); } .ql-select .ql-grid { max-height: 52vh; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); grid-auto-rows: 96px; } .ql-select .ql-tile { height: 96px; } }
+
+/* ===== Momentum graph ===== */
+.mg { margin-top: 18px; padding: 18px 20px; background: linear-gradient(160deg, rgba(20,28,60,.85), rgba(8,10,24,.92)); border: 1px solid rgba(110,160,255,.2); clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+.mg__pick { background: #0b0f24; color: #dde; border: 1px solid rgba(255,255,255,.2); padding: 5px 8px; font-family: inherit; }
+.mg__chart { position: relative; height: 220px; }
+.mg__chart svg { width: 100%; height: 100%; overflow: visible; }
+.mg__zero { stroke: rgba(255,255,255,.18); stroke-dasharray: 4 4; }
+.mg__slide { fill: rgba(255,68,102,.09); }
+.mg__area { fill: url(#mg-up); }
+.mg__line { fill: none; stroke: #6ec8ff; stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(47,200,255,.6)); }
+.mg__dot { stroke: #0b0f24; stroke-width: 2; vector-effect: non-scaling-stroke; transition: r .1s; }
+.mg__dot--w { fill: #3ddc84; } .mg__dot--l { fill: var(--red); }
+.mg__mark { font-family: var(--font-display); font-size: 13px; letter-spacing: .15em; fill: #ffc94a; }
+.mg__mark--low { fill: #ff8fa3; }
+.mg__axis { position: absolute; left: 0; font-size: 11px; color: #667; }
+.mg__axis--top { top: 14px; } .mg__axis--bot { bottom: 14px; }
+.mg__tip { color: #ccd; font-size: 14px; margin: 8px 0 0; min-height: 20px; }

@@ -1964,3 +1964,5 @@ button { font-family: inherit; }
 .smeta-trait__name { font-family: var(--font-display); font-size: 17px !important; text-transform: uppercase; }
 .smeta-trait__bar { height: 10px !important; transform: skewX(-20deg); }
 .smeta-trait__fill { background: linear-gradient(90deg, var(--orange), #ffe08a) !important; box-shadow: 0 0 10px rgba(255, 138, 31, 0.6); }
+
+.movelist-head__title, .training-head__title, .saved__title { display: none; }

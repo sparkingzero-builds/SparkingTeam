@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { characters, allTags, allEpisodes } from '../data/characters.js'
 import CharacterDetail from './CharacterDetail.jsx'
+import FighterCard from './FighterCard.jsx'
 
 const allForms = characters.flatMap((c) =>
   c.forms.map((f) => ({
@@ -85,39 +86,21 @@ export default function CharacterData() {
       </div>
 
       <div className="cd-grid">
-        {filtered.map((row) => (
-          <button
+        {filtered.map((row, i) => (
+          <FighterCard
             key={row.id}
-            className="cd-card"
-            type="button"
+            charId={row.charId}
+            name={row.name}
+            form={row.form}
+            dp={row.dp}
+            image={row.image}
+            color={row.color}
+            health={row.health}
+            kiBars={row.kiBars}
+            traits={row.traits}
+            delay={Math.min(i, 16) * 30}
             onClick={() => openDetail(row)}
-          >
-            <div className="cd-card__image">
-              {row.image ? (
-                <img src={row.image} alt={row.name} />
-              ) : (
-                <div className="cd-card__placeholder" style={{ background: row.color }}>
-                  {row.name[0]}
-                </div>
-              )}
-              <span className="cd-card__dp">⚡ {row.dp}</span>
-            </div>
-            <div className="cd-card__body">
-              <h3 className="cd-card__name">{row.name}</h3>
-              <p className="cd-card__form">{row.form}</p>
-              <div className="cd-card__stats">
-                <span className="cd-card__stat">❤️ HP <strong>{row.health.toLocaleString()}</strong></span>
-                <span className="cd-card__stat">✨ Ki <strong>{row.kiBars}</strong></span>
-              </div>
-              {row.traits.length > 0 && (
-                <div className="cd-card__traits">
-                  {row.traits.map((t) => (
-                    <span key={t} className="cd-card__trait">{t}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </button>
+          />
         ))}
       </div>
 

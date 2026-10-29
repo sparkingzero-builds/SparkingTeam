@@ -3,6 +3,7 @@ import { characters, charactersById } from '../data/characters.js'
 import { getCombatData } from '../data/combatData.js'
 import { tierLists } from '../data/tierList.js'
 import CharacterDetail from './CharacterDetail.jsx'
+import FighterCard from './FighterCard.jsx'
 
 const GOOD_TRAITS = ['Instant Spark', 'Dodge Skill', 'Unblockable Ultimate', 'Health Regeneration']
 const GOOD_SKILLS = ['Wild Sense', 'Explosive Wave', 'Afterimage Strike', 'Afterimage', 'Full Power', 'Super Explosive Wave']
@@ -205,17 +206,26 @@ export default function FighterHub({ onNavigate }) {
 
           <div className="hub-popular">
             <h3 className="hub-popular__title">Top Tier Fighters</h3>
-            <div className="hub-popular__grid">
-              {popular.map(c => (
-                <button key={c.id} className="hub-popular__card" type="button" onClick={() => pickChar(c)}>
-                  {c.forms[0]?.image ? (
-                    <img className="hub-popular__img" src={c.forms[0].image} alt={c.name} />
-                  ) : (
-                    <div className="hub-popular__ph" style={{ background: c.color }}>{c.name[0]}</div>
-                  )}
-                  <span className="hub-popular__name">{c.name}</span>
-                </button>
-              ))}
+            <div className="hub-showcase">
+              {popular.map((c, i) => {
+                const peak = c.forms.reduce((a, f) => (f.dp > a.dp ? f : a), c.forms[0])
+                return (
+                  <FighterCard
+                    key={c.id}
+                    charId={c.id}
+                    name={c.name}
+                    form={peak.form}
+                    dp={peak.dp}
+                    image={peak.image || c.forms[0].image}
+                    color={c.color}
+                    traits={peak.traits}
+                    rank={i + 1}
+                    size="lg"
+                    delay={i * 70}
+                    onClick={() => pickChar(c)}
+                  />
+                )
+              })}
             </div>
           </div>
 

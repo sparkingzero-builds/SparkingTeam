@@ -29,7 +29,7 @@ export default function SessionGoal() {
           <p className="sg__text">{p.text}</p>
           <div className="sg__foot">
             <span>This session: <b className="ql-w">{p.w}W</b> · <b className="ql-l">{p.l}L</b></span>
-            <button type="button" className="sg__end" onClick={end}>{p.done ? 'NEW GOAL' : 'END GOAL'}</button>
+            <button type="button" className="sg__end" onClick={end}>{p.done ? '✓ END SESSION' : 'END SESSION'}</button>
           </div>
         </>
       ) : (

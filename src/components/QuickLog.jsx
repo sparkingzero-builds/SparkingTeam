@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { characters } from '../data/characters.js'
+import { CHARACTER_TIPS } from '../data/counterStrategies.js'
 import { allMatches, loadMain, loadHistory, saveHistory, loadRecords, saveRecords, logToJournal } from '../utils/matchLog.js'
 
 const AS_KEY = 'szPlayingAs'
 const byId = new Map(characters.map(c => [c.id, c]))
 
+const ACTIVE_KEY = 'szActiveSession'
+
 function readAs() {
   try { return JSON.parse(localStorage.getItem(AS_KEY)) } catch { return null }
+}
+
+function readActive() {
+  try { return JSON.parse(localStorage.getItem(ACTIVE_KEY)) } catch { return null }
 }
 
 function Portrait({ char, className }) {
@@ -31,7 +38,7 @@ export default function QuickLog({ onLogged }) {
 
   useEffect(() => {
     if (!toast) return
-    const t = setTimeout(() => setToast(null), 4000)
+    const t = setTimeout(() => setToast(null), toast.tip ? 9000 : 4000)
     return () => clearTimeout(t)
   }, [toast])
 
@@ -67,7 +74,14 @@ export default function QuickLog({ onLogged }) {
   const log = (result) => {
     const ts = Date.now()
     logToJournal(enemy.id, result, asId, ts)
-    setToast({ ts, enemyId: enemy.id, result, name: enemy.name })
+    const active = readActive()
+    if (active) {
+      active.matches.push({ enemyId: enemy.id, result, myId: asId || null, ts })
+      localStorage.setItem(ACTIVE_KEY, JSON.stringify(active))
+    }
+    const tips = CHARACTER_TIPS[enemy.id]?.tips
+    const tip = result === 'l' && tips?.length ? tips[Math.floor(Math.random() * tips.length)] : null
+    setToast({ ts, enemyId: enemy.id, result, name: enemy.name, tip })
     setEnemy(null)
     setSearch('')
     setVersion(v => v + 1)
@@ -77,6 +91,11 @@ export default function QuickLog({ onLogged }) {
   const undo = () => {
     if (!toast) return
     saveHistory(loadHistory().filter(h => h.ts !== toast.ts))
+    const active = readActive()
+    if (active) {
+      active.matches = active.matches.filter(m => m.ts !== toast.ts)
+      localStorage.setItem(ACTIVE_KEY, JSON.stringify(active))
+    }
     const rec = loadRecords()
     if (rec[toast.enemyId]) {
       rec[toast.enemyId][toast.result] = Math.max(0, rec[toast.enemyId][toast.result] - 1)
@@ -98,7 +117,10 @@ export default function QuickLog({ onLogged }) {
 
       {toast && !open && (
         <div className={'ql-toast ql-toast--' + toast.result}>
-          <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+          <div className="ql-toast__body">
+            <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+            {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}
+          </div>
           <button type="button" onClick={undo}>Undo</button>
         </div>
       )}
@@ -115,7 +137,7 @@ export default function QuickLog({ onLogged }) {
                 </span>
               </button>
               <div className="ql-today">
-                <small>TODAY</small>
+                <small>{readActive() ? <span className="ql-live">● SESSION LIVE</span> : 'TODAY'}</small>
                 <strong><span className="ql-w">{today.w}W</span> · <span className="ql-l">{today.l}L</span></strong>
               </div>
               <button className="ql-close" type="button" onClick={close} aria-label="Close">✕</button>
@@ -123,7 +145,10 @@ export default function QuickLog({ onLogged }) {
 
             {toast && (
               <div className={'ql-toast ql-toast--inline ql-toast--' + toast.result}>
-                <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+                <div className="ql-toast__body">
+                  <span>{toast.result === 'w' ? 'WIN' : 'LOSS'} vs {toast.name} logged</span>
+                  {toast.tip && <p className="ql-tip"><b>Next time:</b> {toast.tip}</p>}
+                </div>
                 <button type="button" onClick={undo}>Undo</button>
               </div>
             )}

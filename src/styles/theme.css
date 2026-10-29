@@ -945,3 +945,19 @@ button { font-family: inherit; }
 .cd-grid .fc__inner { content-visibility: auto; }
 .fc--mythic .fc__shine, .fc--legendary .fc__shine { opacity: 0; }
 .fc--mythic:hover .fc__shine, .fc--legendary:hover .fc__shine { opacity: 1; }
+
+.ql-toast__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ql-toast:has(.ql-tip) { white-space: normal; width: min(520px, calc(100vw - 32px)); align-items: flex-start; }
+.ql-tip {
+  margin: 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #d9e2ff;
+  line-height: 1.25;
+}
+.ql-tip b { color: var(--orange-2); font-family: var(--font-display); font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; }
+.ql-live { color: var(--red); animation: ql-blink 1.2s steps(2) infinite; }
+@keyframes ql-blink { 50% { opacity: 0.35; } }
